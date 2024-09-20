@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockedt</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --twitter-blue: #1DA1F2;
+            --twitter-black: #14171A;
+            --twitter-dark-gray: #657786;
+            --twitter-light-gray: #AAB8C2;
+            --twitter-extra-light-gray: #E1E8ED;
+            --twitter-white: #FFFFFF;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--twitter-extra-light-gray);
+            color: var(--twitter-black);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: var(--twitter-blue);
+            color: var(--twitter-white);
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            flex-grow: 1;
+            padding: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .input-container {
+            background-color: var(--twitter-white);
+            border-radius: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+        }
+        #postUrl {
+            flex-grow: 1;
+            border: none;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+        #postUrl:focus {
+            outline: none;
+        }
+        button {
+            background-color: var(--twitter-blue);
+            color: var(--twitter-white);
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1a91da;
+        }
+        .user-list {
+            background-color: var(--twitter-white);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--twitter-extra-light-gray);
+        }
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--twitter-light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+        }
+        .user-name {
+            font-weight: bold;
+        }
+        .user-handle {
+            color: var(--twitter-dark-gray);
+        }
+        .block-btn {
+            background-color: var(--twitter-white);
+            color: var(--twitter-blue);
+            border: 1px solid var(--twitter-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .block-btn:hover {
+            background-color: var(--twitter-blue);
+            color: var(--twitter-white);
+        }
+        .block-btn.blocked {
+            background-color: var(--twitter-dark-gray);
+            color: var(--twitter-white);
+            border-color: var(--twitter-dark-gray);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Blockedt</h1>
+    </header>
+    
+    <main>
+        <div class="input-container">
+            <input type="text" id="postUrl" placeholder="Enter X post URL">
+            <button onclick="fetchPostData()">Fetch Users</button>
+        </div>
+
+        <div id="userList" class="user-list" style="display: none;">
+            <h2>Original Poster and Reposters</h2>
+            <div id="users"></div>
+        </div>
+    </main>
+
+    <script>
+        let users = [];
+
+        function fetchPostData() {
+            const postUrl = document.getElementById('postUrl').value.trim();
+            if (postUrl) {
+                // In a real implementation, this would make an API call to X
+                // For this example, we'll simulate fetching data
+                simulateFetchData(postUrl);
+            }
+        }
+
+        function simulateFetchData(postUrl) {
+            // Simulated data
+            users = [
+                { id: 1, name: "Original Poster", handle: "@original", isOP: true },
+                { id: 2, name: "Reposter 1", handle: "@reposter1" },
+                { id: 3, name: "Reposter 2", handle: "@reposter2" },
+                { id: 4, name: "Reposter 3", handle: "@reposter3" }
+            ];
+            updateUserList();
+        }
+
+        function updateUserList() {
+            const userList = document.getElementById('users');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'user-item';
+                div.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="user-name">${user.name} ${user.isOP ? '(Original Poster)' : ''}</div>
+                            <div class="user-handle">${user.handle}</div>
+                        </div>
+                    </div>
+                    <button onclick="toggleBlock(${user.id})" class="block-btn" id="block-${user.id}">
+                        Block
+                    </button>
+                `;
+                userList.appendChild(div);
+            });
+            document.getElementById('userList').style.display = 'block';
+        }
+
+        function toggleBlock(userId) {
+            const button = document.getElementById(`block-${userId}`);
+            if (button.classList.contains('blocked')) {
+                button.textContent = 'Block';
+                button.classList.remove('blocked');
+            } else {
+                button.textContent = 'Unblock';
+                button.classList.add('blocked');
+            }
+            // In a real implementation, this would make an API call to X to block/unblock the user
+        }
+    </script>
+</body>
+</html>
